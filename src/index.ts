@@ -2,6 +2,7 @@ import express from "express";
 import bodyParser from "body-parser";
 import GoogleCloud from "./cloud";
 import { transpilerCode, customGenerator, minify } from "./utils";
+import { RESPONSE_TYPE } from "./constants";
 
 const port = process.env.PORT || 8080;
 const app = express();
@@ -11,6 +12,19 @@ app.use(bodyParser.urlencoded({ extended: true, limit: "2mb" }));
 const cloud = new GoogleCloud();
 
 app.get("/", (req, res) => res.send("REGISTRY API server"));
+
+app.get("/package/:package_name", async (req, res) => {
+  const { package_name } = req.params;
+  if (package_name) {
+    const result = await cloud.fetchFromRegistry(package_name, "cjs");
+    res
+      .header("Content-Type", RESPONSE_TYPE)
+      .status(200)
+      .send(result);
+  } else {
+    res.status(400);
+  }
+});
 
 app.post("/publish", async (req, res) => {
   const { uidl } = req.body;

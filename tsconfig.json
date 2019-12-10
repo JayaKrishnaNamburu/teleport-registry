@@ -2,6 +2,7 @@
   "compilerOptions": {
     "module": "commonjs",
     "target": "es5",
+    "declaration": true,
     "lib": ["es2015", "dom"],
     "sourceMap": true,
     "types": ["node"],
@@ -10,7 +11,9 @@
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "noUnusedLocals": true,
-    "outDir": "dist"
+    "resolveJsonModule": true,
+    "outDir": "lib/",
+    "typeRoots": ["node_modules/@types"]
   },
-  "exclude": ["node_modules", "lib"]
+  "exclude": ["node_modules", "lib", "./__tests__/**/*"]
 }

@@ -1,13 +1,15 @@
 {
   "name": "teleport-registry",
   "description": "A regsitry to save all components that are designed in playground",
-  "version": "1.0.0",
-  "main": "index.js",
+  "version": "0.0.0",
+  "main": "lib/index.js",
+  "types": "lib/types.d.ts",
   "license": "MIT",
   "scripts": {
     "lint": "tslint -p ./",
     "dev": "ts-node-dev ./src/index.ts",
-    "build": "rimraf dist && tsc"
+    "build": "rimraf lib && tsc",
+    "deploy": "yarn build && gcloud functions deploy component-store --runtime nodejs8 --trigger-http --entry-point app"
   },
   "dependencies": {
     "@babel/core": "^7.7.5",

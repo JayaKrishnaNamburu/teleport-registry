@@ -10,6 +10,23 @@ class GoogleCloud {
     this.bucket = storage.bucket(config.bucketName);
   }
 
+  public async fetchFromRegistry(packageName, packageType) {
+    const packageFile = this.bucket.file(
+      `${packageName}/${packageType}/index.js`
+    );
+    try {
+      const exists = await packageFile.exists();
+      console.log(exists);
+      if (!exists[0]) {
+        return;
+      }
+      const content = await packageFile.download();
+      return content.toString("utf-8", 0, 12);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
   public async pushToRegistry(componentESM, componentCJS, packageName) {
     try {
       const esmFile = this.bucket.file(`${packageName}/esm/index.js`);
