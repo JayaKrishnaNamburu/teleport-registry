@@ -1,13 +1,21 @@
 import express from "express";
 import bodyParser from "body-parser";
 import GoogleCloud from "./cloud";
-import { transpilerCode, customGenerator, minify } from "./utils";
+import { customGenerator, minify, lowerDashCase } from "./utils";
 import { RESPONSE_TYPE } from "./constants";
 
 const port = process.env.PORT || 8080;
 const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true, limit: "2mb" }));
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  next();
+});
 
 const cloud = new GoogleCloud();
 
@@ -27,14 +35,15 @@ app.get("/package/:package_name", async (req, res) => {
 });
 
 app.post("/publish", async (req, res) => {
-  const { uidl } = req.body;
+  const { uidl: inputUIDL } = req.body;
   try {
-    const packageName = uidl.name;
+    const uidl = JSON.parse(inputUIDL);
+    // const uidl = inputUIDL;
+    const packageName = lowerDashCase(uidl.name);
     const component = await customGenerator(uidl);
-    const transpiledCJS = transpilerCode(component);
-    const minifiedESM = minify(component);
+    const transpiledCJS = await minify(component, packageName);
 
-    await cloud.pushToRegistry(minifiedESM, transpiledCJS, packageName);
+    await cloud.pushToRegistry(transpiledCJS, packageName);
     res.status(200).json({ message: "Component saved to registry" });
   } catch (e) {
     console.log(e);

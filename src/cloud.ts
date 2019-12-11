@@ -27,20 +27,10 @@ class GoogleCloud {
     }
   }
 
-  public async pushToRegistry(componentESM, componentCJS, packageName) {
+  public async pushToRegistry(componentCJS, packageName) {
     try {
-      const esmFile = this.bucket.file(`${packageName}/esm/index.js`);
       const cjsFile = this.bucket.file(`${packageName}/cjs/index.js`);
-
-      const esmBufferStream = Buffer.from(componentESM);
       const cjsBufferStream = Buffer.from(componentCJS);
-
-      await esmFile.save(esmBufferStream, {
-        metadata: {
-          contentType: APPLICATION_TYPE,
-          cacheControl: CACHE_CONTROL
-        }
-      });
 
       await cjsFile.save(cjsBufferStream, {
         metadata: {
@@ -49,7 +39,6 @@ class GoogleCloud {
         }
       });
 
-      await esmFile.makePublic();
       await cjsFile.makePublic();
       return;
     } catch (e) {
