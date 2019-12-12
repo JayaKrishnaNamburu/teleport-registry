@@ -3,6 +3,7 @@ import { rollup } from "rollup";
 import virtual from "@rollup/plugin-virtual";
 import sourceMaps from "rollup-plugin-sourcemaps";
 import commonJS from "rollup-plugin-commonjs";
+import { uglify } from "rollup-plugin-uglify";
 
 import babelPresetENV from "@babel/preset-env";
 import babelPresetReact from "@babel/preset-react";
@@ -34,6 +35,7 @@ export const bundler = async (code, packageName) => {
         commonJS({
           ignoreGlobal: true
         }),
+        uglify(),
         sourceMaps()
       ]
     });
