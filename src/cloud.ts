@@ -16,9 +16,8 @@ class GoogleCloud {
     );
     try {
       const exists = await packageFile.exists();
-      console.log(exists);
       if (!exists[0]) {
-        return;
+        return null;
       }
       const content = await packageFile.download();
       return content.toString("utf-8", 0, 12);

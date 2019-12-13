@@ -25,10 +25,14 @@ app.get("/package/:package_name", async (req, res) => {
   const { package_name } = req.params;
   if (package_name) {
     const result = await cloud.fetchFromRegistry(package_name, "cjs");
-    res
-      .header("Content-Type", RESPONSE_TYPE)
-      .status(200)
-      .send(result);
+    if (result) {
+      res
+        .header("Content-Type", RESPONSE_TYPE)
+        .status(200)
+        .send(result);
+    } else {
+      res.status(400).json({ message: "Package missing in registry" });
+    }
   } else {
     res.status(400);
   }

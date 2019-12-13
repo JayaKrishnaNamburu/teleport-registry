@@ -1,8 +1,7 @@
 import * as Babel from "@babel/core";
 import { rollup } from "rollup";
 import virtual from "@rollup/plugin-virtual";
-import sourceMaps from "rollup-plugin-sourcemaps";
-import commonJS from "rollup-plugin-commonjs";
+import sourcemaps from "rollup-plugin-sourcemaps";
 import { uglify } from "rollup-plugin-uglify";
 
 import babelPresetENV from "@babel/preset-env";
@@ -32,11 +31,8 @@ export const bundler = async (code, packageName) => {
         virtual({
           "__entry__.js": code
         }),
-        commonJS({
-          ignoreGlobal: true
-        }),
         uglify(),
-        sourceMaps()
+        sourcemaps()
       ]
     });
 
@@ -44,7 +40,6 @@ export const bundler = async (code, packageName) => {
       format: "iife",
       globals: { react: "React" },
       name: packageName,
-      extend: true,
       sourcemap: true
     });
 
@@ -65,5 +60,11 @@ export const customGenerator = async uidl => {
   return files[0].content;
 };
 
-export const lowerDashCase = str =>
-  (str = str.replace(/\s+/g, "-").toLowerCase());
+export const lowerDashCase = str => {
+  const name = str
+    .replace(/(?:^\w|[A-Z]|\b\w)/g, (word, index) =>
+      index === 0 ? word.toLowerCase() : word.toUpperCase()
+    )
+    .replace(/\s+/g, "");
+  return name[0].toUpperCase() + name.slice(1);
+};
