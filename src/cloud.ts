@@ -26,10 +26,13 @@ class GoogleCloud {
     }
   }
 
-  public async pushToRegistry(componentCJS, packageName) {
+  public async pushToRegistry(iifeBundle, cjsBundle, packageName) {
     try {
+      const iifeFile = this.bucket.file(`${packageName}/cdn/index.js`);
+      const iifeBufferStream = Buffer.from(iifeBundle);
+
       const cjsFile = this.bucket.file(`${packageName}/cjs/index.js`);
-      const cjsBufferStream = Buffer.from(componentCJS);
+      const cjsBufferStream = Buffer.from(cjsBundle);
 
       await cjsFile.save(cjsBufferStream, {
         metadata: {
@@ -38,7 +41,13 @@ class GoogleCloud {
         }
       });
 
-      await cjsFile.makePublic();
+      await iifeFile.save(iifeBufferStream, {
+        metadata: {
+          contentType: APPLICATION_TYPE,
+          cacheControl: CACHE_CONTROL
+        }
+      });
+
       return;
     } catch (e) {
       console.error(e);

@@ -12,14 +12,15 @@ import reactComponent from "@teleporthq/teleport-plugin-react-base-component";
 import inlineStylesPlugin from "@teleporthq/teleport-plugin-jsx-inline-styles";
 import importStatemenetsPlugin from "@teleporthq/teleport-plugin-import-statements";
 
-export const minify = async (esmComponent, packageName) => {
+export const compile = async (esmComponent, packageName) => {
   const { transformSync } = Babel;
   // Step for transpiling react components
-  const minifiedCode = transformSync(esmComponent, {
+  const cjsBundle = transformSync(esmComponent, {
     presets: [[babelPresetENV, { modules: false }], babelPresetReact]
   });
-  const bundledPackage = bundler(minifiedCode, packageName);
-  return bundledPackage;
+
+  const iifeBundle = await bundler(cjsBundle.code, packageName);
+  return [iifeBundle, cjsBundle.code];
 };
 
 export const bundler = async (code, packageName) => {
