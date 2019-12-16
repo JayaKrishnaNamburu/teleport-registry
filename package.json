@@ -25,9 +25,12 @@
     "@teleporthq/teleport-types": "^0.10.1",
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
+    "mississippi": "^4.0.0",
     "rollup": "^1.27.10",
     "rollup-plugin-sourcemaps": "^0.4.2",
-    "rollup-plugin-uglify": "^6.0.4"
+    "rollup-plugin-uglify": "^6.0.4",
+    "tar-stream": "^2.1.0",
+    "zlib": "^1.0.5"
   },
   "devDependencies": {
     "@types/express": "^4.17.2",

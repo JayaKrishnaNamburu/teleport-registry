@@ -21,6 +21,20 @@ const cloud = new GoogleCloud();
 
 app.get("/", (req, res) => res.send("REGISTRY API server"));
 
+app.get("/registry/:package_name", async (req, res) => {
+  const { package_name } = req.params;
+  if (package_name) {
+    const result = await cloud.fetchPackageFromRegistry(package_name);
+    if (result) {
+      res.send(result);
+    } else {
+      res.status(400).json({ message: "Package missing in registry" });
+    }
+  } else {
+    res.status(400).json({ message: "Please select a package" });
+  }
+});
+
 app.get("/:package_type/:package_name", async (req, res) => {
   const { package_name, package_type } = req.params;
   if (package_name && package_type) {

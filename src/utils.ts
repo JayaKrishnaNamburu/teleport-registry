@@ -15,15 +15,19 @@ import importStatemenetsPlugin from "@teleporthq/teleport-plugin-import-statemen
 export const compile = async (esmComponent, packageName) => {
   const { transformSync } = Babel;
   // Step for transpiling react components
-  const cjsBundle = transformSync(esmComponent, {
+  const bundle = transformSync(esmComponent, {
     presets: [[babelPresetENV, { modules: false }], babelPresetReact]
   });
 
-  const iifeBundle = await bundler(cjsBundle.code, packageName);
+  const cjsBundle = transformSync(esmComponent, {
+    presets: [babelPresetENV, babelPresetReact]
+  });
+
+  const iifeBundle = await bundler(bundle.code, packageName);
   return [iifeBundle, cjsBundle.code];
 };
 
-export const bundler = async (code, packageName) => {
+export const bundler = async (code, packageName: string) => {
   try {
     const compiler = await rollup({
       input: "__entry__.js",
@@ -61,11 +65,30 @@ export const customGenerator = async uidl => {
   return files[0].content;
 };
 
-export const lowerDashCase = str => {
+export const lowerDashCase = (str: string) => {
   const name = str
     .replace(/(?:^\w|[A-Z]|\b\w)/g, (word, index) =>
       index === 0 ? word.toLowerCase() : word.toUpperCase()
     )
     .replace(/\s+/g, "");
   return name[0].toUpperCase() + name.slice(1);
+};
+
+export const camelCaseToDash = (str: string) => {
+  return str.replace(/([a-zA-Z])(?=[A-Z])/g, "$1-").toLowerCase();
+};
+
+export const generatePackageJSON = (packageName: string) => {
+  return `
+{
+  "name": "${packageName}",
+  "main": "index.js",
+  "version": "0.1.0",
+  "description": "Package generated from Teleport playground UI",
+  "peerDependencies": {
+    "react": "^15.0.0 || ^16.0.0",
+    "react-dom": "^15.0.0 || ^16.0.0"
+  }, 
+}
+`;
 };
