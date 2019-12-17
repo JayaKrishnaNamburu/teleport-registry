@@ -3,6 +3,8 @@ import bodyParser from "body-parser";
 import GoogleCloud from "./cloud";
 import { customGenerator, compile, lowerDashCase } from "./utils";
 import { RESPONSE_TYPE } from "./constants";
+// import { pipeline } from "mississippi";
+// import { Stream } from "stream";
 
 const port = process.env.PORT || 8080;
 const app = express();
@@ -24,11 +26,19 @@ app.get("/", (req, res) => res.send("REGISTRY API server"));
 app.get("/registry/:package_name", async (req, res) => {
   const { package_name } = req.params;
   if (package_name) {
-    const result = await cloud.fetchPackageFromRegistry(package_name);
-    if (result) {
-      res.send(result);
-    } else {
-      res.status(400).json({ message: "Package missing in registry" });
+    try {
+      const result = await cloud.fetchPackageFromRegistry(package_name);
+      if (result) {
+        res.header({
+          "Cache-Control": "no-cache, no-store, max-age=0, must-revalidate ",
+          "Content-Type": "application/gzip"
+        });
+        res.end(result);
+      } else {
+        res.status(400).json({ message: "Package missing in registry" });
+      }
+    } catch (e) {
+      res.status(500);
     }
   } else {
     res.status(400).json({ message: "Please select a package" });

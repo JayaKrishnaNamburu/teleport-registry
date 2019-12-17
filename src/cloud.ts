@@ -38,7 +38,7 @@ class GoogleCloud {
         return null;
       }
       const content = await file.download({ validation: false });
-      return content;
+      return content.toString("utf-8", 0, 12);
     } catch (e) {
       console.error(e);
     }
