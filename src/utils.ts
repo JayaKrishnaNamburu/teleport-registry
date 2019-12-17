@@ -79,8 +79,7 @@ export const camelCaseToDash = (str: string) => {
 };
 
 export const generatePackageJSON = (packageName: string) => {
-  return `
-{
+  return `{
   "name": "${packageName}",
   "main": "index.js",
   "version": "0.1.0",
@@ -88,7 +87,7 @@ export const generatePackageJSON = (packageName: string) => {
   "peerDependencies": {
     "react": "^15.0.0 || ^16.0.0",
     "react-dom": "^15.0.0 || ^16.0.0"
-  }, 
+  } 
 }
 `;
 };

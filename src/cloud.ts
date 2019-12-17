@@ -3,8 +3,6 @@ import { config } from "./config";
 import { APPLICATION_TYPE, CACHE_CONTROL } from "./constants";
 import { generatePackageJSON, camelCaseToDash } from "./utils";
 import tar from "tar-stream";
-// import zlib from "zlib";
-// import { pipeline } from "mississippi";
 
 class GoogleCloud {
   private bucket: any;
@@ -57,7 +55,7 @@ class GoogleCloud {
       );
       const packagingName = camelCaseToDash(packageName);
       const packageFile = this.bucket.file(
-        `${packageName}/cjs/package/${packagingName}`
+        `${packageName}/cjs/package/${packagingName}.tgz`
       );
 
       const cjsBuffer = Buffer.from(cjsBundle);
@@ -67,13 +65,13 @@ class GoogleCloud {
       const pack = tar.pack();
       pack.entry(
         {
-          name: "index.js"
+          name: "package/index.js"
         },
         cjsBundle
       );
       pack.entry(
         {
-          name: "package.json"
+          name: "package/package.json"
         },
         generatePackageJSON(packagingName)
       );
