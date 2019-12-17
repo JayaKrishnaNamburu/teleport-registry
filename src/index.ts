@@ -3,8 +3,6 @@ import bodyParser from "body-parser";
 import GoogleCloud from "./cloud";
 import { customGenerator, compile, lowerDashCase } from "./utils";
 import { RESPONSE_TYPE } from "./constants";
-// import { pipeline } from "mississippi";
-// import { Stream } from "stream";
 
 const port = process.env.PORT || 8080;
 const app = express();
