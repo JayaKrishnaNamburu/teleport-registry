@@ -6,6 +6,7 @@ import { uglify } from "rollup-plugin-uglify";
 
 import babelPresetENV from "@babel/preset-env";
 import babelPresetReact from "@babel/preset-react";
+import babelPresetMinify from "babel-preset-minify";
 
 import { createComponentGenerator } from "@teleporthq/teleport-component-generator";
 import reactComponent from "@teleporthq/teleport-plugin-react-base-component";
@@ -20,7 +21,7 @@ export const compile = async (esmComponent, packageName) => {
   });
 
   const cjsBundle = transformSync(esmComponent, {
-    presets: [babelPresetENV, babelPresetReact]
+    presets: [babelPresetENV, babelPresetReact, babelPresetMinify]
   });
 
   const iifeBundle = await bundler(bundle.code, packageName);
