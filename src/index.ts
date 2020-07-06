@@ -1,7 +1,7 @@
 import express from "express";
 import bodyParser from "body-parser";
 import GoogleCloud from "./cloud";
-import { customGenerator, minify, lowerDashCase } from "./utils";
+import { customGenerator, compile, lowerDashCase } from "./utils";
 import { RESPONSE_TYPE } from "./constants";
 
 const port = process.env.PORT || 8080;
@@ -21,10 +21,10 @@ const cloud = new GoogleCloud();
 
 app.get("/", (req, res) => res.send("REGISTRY API server"));
 
-app.get("/package/:package_name", async (req, res) => {
-  const { package_name } = req.params;
-  if (package_name) {
-    const result = await cloud.fetchFromRegistry(package_name, "cjs");
+app.get("/:package_type/:package_name", async (req, res) => {
+  const { package_name, package_type } = req.params;
+  if (package_name && package_type) {
+    const result = await cloud.fetchFromRegistry(package_name, package_type);
     if (result) {
       res
         .header("Content-Type", RESPONSE_TYPE)
@@ -42,12 +42,11 @@ app.post("/publish", async (req, res) => {
   const { uidl: inputUIDL } = req.body;
   try {
     const uidl = JSON.parse(inputUIDL);
-    // const uidl = inputUIDL;
     const packageName = lowerDashCase(uidl.name);
     const component = await customGenerator(uidl);
-    const transpiledCJS = await minify(component, packageName);
+    const [iifeBundle, cjsBundle] = await compile(component, packageName);
 
-    await cloud.pushToRegistry(transpiledCJS, packageName);
+    await cloud.pushToRegistry(iifeBundle, cjsBundle, packageName);
     res.status(200).json({ message: "Component saved to registry" });
   } catch (e) {
     console.log(e);
